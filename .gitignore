@@ -27,3 +27,8 @@ demo/out/
 # --- Python ---
 __pycache__/
 *.pyc
+
+# --- Local flash dumps, logs, session notes ---
+.flash/
+*.log
+CONTINUITY.md

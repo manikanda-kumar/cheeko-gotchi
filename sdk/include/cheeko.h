@@ -94,6 +94,12 @@ class Speaker {  // [Stable]
   void Play(const std::string& path);
   void Tone(int frequency_hz, int duration_ms);
   void SetVolume(int volume);  // 0..100
+
+  // [Experimental] Queue mono 16-bit PCM for playback and return immediately.
+  // The buffer is copied; it is resampled if sample_rate_hz differs from the
+  // speaker's native rate. Returns false if the queue is full.
+  bool PlayPcm(const int16_t* samples, size_t sample_count, int sample_rate_hz);
+  bool IsPlaying();  // [Experimental] queued or playing PCM
 };
 
 class Microphone {  // [Stable]
@@ -140,10 +146,21 @@ class Log {
   void Error(const std::string& message);
 };
 
+// Voice-agent turn state, pushed by the host bridge (tools/voice_agent).
+// [Experimental]
+enum class VoiceState { Idle, Listening, Thinking, Researching, Speaking, Error };
+
 class Cloud {  // [Stable]
  public:
+  // [Experimental] v1 transport is the USB serial link to tools/voice_agent on
+  // the host; Wi-Fi comes later. Connect() starts the link.
   void Connect();
+  // Push-to-talk: StartVoiceSession() opens the mic and streams it to the
+  // host; EndVoiceTurn() closes it and asks the agent to reply. Replies arrive
+  // as OnVoiceState()/OnCloudText() and play through the speaker on their own.
   void StartVoiceSession();
+  void EndVoiceTurn();  // [Experimental]
+  bool IsLinked();      // [Experimental] host bridge heartbeat seen recently.
   void SendText(const std::string& text);
   void GetJson(const std::string& url);
   void PostJson(const std::string& url, const std::string& json);
@@ -187,6 +204,7 @@ class CheekoApp {
   virtual void OnShake() {}                              // [Experimental] device shaken.
   virtual void OnMicAudio(const AudioFrame& /*frame*/) {} // PCM after mic().Start().
   virtual void OnCloudText(const std::string& /*text*/) {} // Transcripts / replies.
+  virtual void OnVoiceState(VoiceState /*state*/) {}     // [Experimental] agent turn state.
 };
 
 CheekoRuntime& Cheeko();

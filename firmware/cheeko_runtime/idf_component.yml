@@ -1,0 +1,5 @@
+# Same versions as firmware/hardware_test (pinned there by dependencies.lock).
+dependencies:
+  idf: ">=5.5"
+  lvgl/lvgl: "~9.4.0"
+  espressif/esp_lvgl_port: "~2.7.0"

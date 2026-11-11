@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "opencode-go": { "options": { "apiKey": "{env:OPENCODE_GO_API_KEY}" } }
+  },
+  "agent": {
+    "cheeko-voice": {
+      "mode": "primary",
+      "description": "Fast spoken replies for the Cheeko desk duck",
+      "prompt": "{file:./prompts/voice.md}",
+      "tools": { "*": false },
+      "permission": { "*": "deny" }
+    },
+    "cheeko-research": {
+      "mode": "primary",
+      "description": "Web research, answer distilled for speech",
+      "prompt": "{file:./prompts/research.md}",
+      "tools": { "*": false, "websearch": true, "webfetch": true },
+      "permission": { "*": "deny", "websearch": "allow", "webfetch": "allow" }
+    }
+  }
+}
